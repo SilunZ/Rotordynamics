@@ -29,8 +29,8 @@ class Newmark_Integrator( Integrator ):
         beta = self._beta
         gamma = self._gamma
         #
-        dFdQ, dFdV = self.fundf(dt, Q, DQ, DDQ)
-        
+        dFdQ, dFdV = self.fundf(dt, Q, DQ, DDQ) 
+
         invMK = np.dot(self.invM, dFdQ)
         invMC = np.dot(self.invM, dFdV)
 
@@ -40,6 +40,8 @@ class Newmark_Integrator( Integrator ):
         self._J[n::,n::] = np.eye(n) - dt * gamma * invMC
 
         self._Javailable = True
+
+        
 
     
     def integrateOneTimeStep(self, t0, t1):
@@ -54,6 +56,7 @@ class Newmark_Integrator( Integrator ):
         self.Q[:] = self.Q0
         self.DQ[:] = self.DQ0
         self.DDQ[:] = self.DDQ0
+        
 
         if not self._Javailable:
             self.setJacobian(dt, self.Q, self.DQ, self.DDQ)
@@ -62,7 +65,7 @@ class Newmark_Integrator( Integrator ):
         while 1:
 
             #compute the acceleration
-            force = self.funforce(dt, self.Q, self.DQ, self.DDQ)
+            force = self.funforce(t1, dt, self.Q, self.DQ, self.DDQ)
             self.DDQ[:] = np.dot(self.invM, force)
 
             #compute the vector residuel
@@ -76,12 +79,15 @@ class Newmark_Integrator( Integrator ):
 
             self.Q[:] = self.Q + rlx * U[0:n]
             self.DQ[:] = self.DQ + rlx * U[n::]
-
+            
             if (err < self._tol) or (itera > self._maxIter):
                 break
             
             itera += 1
         
+        self.Q0[:] = self.Q
+        self.DQ0[:] = self.DQ
+        self.DDQ0[:] = self.DDQ
         
         return True
 

@@ -18,19 +18,17 @@ class TwoDegreeOfFreedomRotor( RotorBuilder ):
 
         # initial rotor position and velocity
         self.dof = 2                        # degree of freedom in x and y directions
-        self.Q0 = np.zeros((self.dof,))
-        self.DQ0 = np.zeros_like(self.Q0)
-        self.DDQ0 = np.zeros_like(self.Q0)
-        self.Q = np.zeros_like(self.Q0)
-        self.DQ = np.zeros_like(self.Q0)
-        self.DDQ = np.zeros_like(self.Q0)
+        self.Q = np.zeros((self.dof,))
+        self.DQ = np.zeros_like(self.Q)
+        self.DDQ = np.zeros_like(self.Q)
     
     def setRotorPositionAndVelocity(self, Q, DQ, DDQ=None):
 
-        self.Q0[:] = Q
-        self.DQ0[:] = DQ
+        self.Q[:] = Q
+        self.DQ[:] = DQ
         if not DDQ is None:
-            self.DDQ0[:] = DDQ
+            self.DDQ[:] = DDQ
+
 
     def _setMassMatrix(self, value):
         self.M = np.zeros((2,2))
@@ -39,11 +37,11 @@ class TwoDegreeOfFreedomRotor( RotorBuilder ):
     
     def _setStiffnessMatrix(self):
         self.K = np.zeros((2,2))
-        k1, k2 = 1e+7, 1e+7
-        self.K[0,0] = k1 + k2
-        self.K[0,1] = -k2
-        self.K[1,0] = -k2
-        self.K[1,1] =  k2
+        k1 = 1e+6
+        self.K[0,0] = k1
+        self.K[0,1] = 0.0
+        self.K[1,0] = 0.0
+        self.K[1,1] = k1
     
     def _setDampping(self):
         self.C = np.zeros((2,2))
@@ -68,17 +66,17 @@ class TwoDegreeOfFreedomRotor( RotorBuilder ):
 
         return Fumba 
     
-    def _computeBearingForce(self, Q, dQ):
+    def _computeBearingForce(self):
 
-        Fbrg = - np.dot( self.K, Q  ) - np.dot( self.C, dQ  )
+        Fbrg = - np.dot( self.K, self.Q  ) - np.dot( self.C, self.DQ  )
 
         return Fbrg
     
-    def functionForce(self, inst, Q, dQ, DDQ):
+    def functionForce(self, inst, dt, Q, DQ, DDQ):
 
         ### Force
         # rolling bearing force
-        Fbrg = self._computeBearingForce(Q, dQ)
+        Fbrg = self._computeBearingForce()
 
         # imbalance or harmonic force
         Fimba = self._computeUnbalanceForce( inst )
@@ -92,7 +90,7 @@ class TwoDegreeOfFreedomRotor( RotorBuilder ):
         return Ftotal
     
     def functionDerivativeForce(self, dt, Q, DQ, DDQ):
-        return -self.K , -self.C
+        return - self.K , -self.C
 
 
 

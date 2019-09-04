@@ -24,9 +24,14 @@ class Integrator():
         self.Q = np.zeros_like(self.Q0)
         self.DQ = np.zeros_like(self.Q0)
         self.DDQ = np.zeros_like(self.Q0)
+    
+    def setInitialValues(self, Q, DQ, DDQ=None):
+        self.Q0[:] = Q
+        self.DQ0[:] = DQ
+        if not DDQ is None:
+            self.DDQ0[:] = DDQ
 
-
-    def _setConvergenceCriteria(self, tol=1e-3, Iter=100):
+    def _setConvergenceCriteria(self, tol=1e-8, Iter=30):
         
         self._tol = tol
         self._maxIter = Iter
