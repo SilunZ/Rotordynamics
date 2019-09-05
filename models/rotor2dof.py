@@ -3,7 +3,11 @@
 __author__="Silun Zhang (silun.zhang@gmail.com)"
 
 import numpy as np
-from rotorComponentBuilder import RotorBuilder
+from models.rotorComponentBuilder import RotorBuilder
+
+class Load():
+    def __init__():
+        pass
 
 class TwoDegreeOfFreedomRotor( RotorBuilder ):
 
@@ -11,9 +15,7 @@ class TwoDegreeOfFreedomRotor( RotorBuilder ):
 
         RotorBuilder.__init__(self, Omega, Ra)
         
-        self._setMassMatrix( mass )
-        self._setStiffnessMatrix()
-        self._setDampping()
+        self._setRotorMassMatrix( mass )
         self._setUnbalance( Um )
 
         # initial rotor position and velocity
@@ -24,31 +26,20 @@ class TwoDegreeOfFreedomRotor( RotorBuilder ):
     
     def setRotorPositionAndVelocity(self, Q, DQ, DDQ=None):
 
-        self.Q[:] = Q
-        self.DQ[:] = DQ
+        self.Q = Q
+        self.DQ = DQ
         if not DDQ is None:
-            self.DDQ[:] = DDQ
+            self.DDQ = DDQ
 
-    def _setMassMatrix(self, value):
+    def addBearingComponent(self, brg):
+
+        self._brg = brg
+
+
+    def _setRotorMassMatrix(self, value):
         self.M = np.zeros((2,2))
         self.M[0,0] = value
         self.M[1,1] = value
-    
-    def _setStiffnessMatrix(self):
-        self.K = np.zeros((2,2))
-        k = 1e+6
-        self.K[0,0] = k
-        self.K[0,1] = 0.0
-        self.K[1,0] = 0.0
-        self.K[1,1] = k
-    
-    def _setDampping(self):
-        self.C = np.zeros((2,2))
-        c = 1000.0
-        self.C[0,0] = c
-        self.C[0,1] = 0.0
-        self.C[1,0] = 0.0
-        self.C[1,1] = c
     
     def _setUnbalance(self, value):
         self._Um = value
@@ -68,7 +59,7 @@ class TwoDegreeOfFreedomRotor( RotorBuilder ):
     
     def _computeBearingForce(self):
 
-        Fbrg = - np.dot( self.K, self.Q  ) - np.dot( self.C, self.DQ  )
+        Fbrg = -( np.dot( self._brg.K, self.Q  ) + np.dot( self._brg.C, self.DQ  ) )
 
         return Fbrg
     
@@ -92,7 +83,7 @@ class TwoDegreeOfFreedomRotor( RotorBuilder ):
         return Ftotal
     
     def functionDerivativeForce(self, dt, Q, DQ, DDQ):
-        return - self.K , -self.C
+        return -self._brg.K , -self._brg.C
 
 
 

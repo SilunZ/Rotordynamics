@@ -3,7 +3,7 @@
 __author__="Silun Zhang (silun.zhang@gmail.com)"
 
 import numpy as np
-from newmark_integrator import Newmark_Integrator
+from solvers.newmark_integrator import Newmark_Integrator
 
 
 class TransientSimulation():
