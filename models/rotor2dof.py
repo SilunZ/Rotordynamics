@@ -29,7 +29,6 @@ class TwoDegreeOfFreedomRotor( RotorBuilder ):
         if not DDQ is None:
             self.DDQ[:] = DDQ
 
-
     def _setMassMatrix(self, value):
         self.M = np.zeros((2,2))
         self.M[0,0] = value
@@ -72,6 +71,8 @@ class TwoDegreeOfFreedomRotor( RotorBuilder ):
         Fbrg = - np.dot( self.K, self.Q  ) - np.dot( self.C, self.DQ  )
 
         return Fbrg
+    
+    # total force to be used
     
     def functionForce(self, inst, dt, Q, DQ, DDQ):
 
