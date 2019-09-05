@@ -6,7 +6,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-
 class Integrator():
 
     def __init__(self, dof, f, df):
@@ -31,7 +30,7 @@ class Integrator():
         if not DDQ is None:
             self.DDQ0[:] = DDQ
 
-    def _setConvergenceCriteria(self, tol=1e-8, Iter=30):
+    def setConvergenceCriteria(self, tol=1e-6, Iter=30):
         
         self._tol = tol
         self._maxIter = Iter

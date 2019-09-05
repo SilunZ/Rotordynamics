@@ -37,18 +37,19 @@ class TwoDegreeOfFreedomRotor( RotorBuilder ):
     
     def _setStiffnessMatrix(self):
         self.K = np.zeros((2,2))
-        k1 = 1e+6
-        self.K[0,0] = k1
+        k = 1e+6
+        self.K[0,0] = k
         self.K[0,1] = 0.0
         self.K[1,0] = 0.0
-        self.K[1,1] = k1
+        self.K[1,1] = k
     
     def _setDampping(self):
         self.C = np.zeros((2,2))
-        self.C[0,0] = 0.0
+        c = 1000.0
+        self.C[0,0] = c
         self.C[0,1] = 0.0
         self.C[1,0] = 0.0
-        self.C[1,1] = 0.0
+        self.C[1,1] = c
     
     def _setUnbalance(self, value):
         self._Um = value

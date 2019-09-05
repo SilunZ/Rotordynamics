@@ -11,7 +11,7 @@ class Newmark_Integrator( Integrator ):
     def __init__(self, dof, M, funforce, fundf, gamma=0.5, beta=0.25):
         
         Integrator.__init__(self, dof, funforce, fundf)
-        self.setConvergenceCriteria(self)
+        Integrator._setConvergenceCriteria(self)
         self.setRelaxCoef(rlx = 1.0)
 
         self._gamma = gamma
@@ -19,8 +19,6 @@ class Newmark_Integrator( Integrator ):
         self.invM = np.linalg.inv(M)
         self._J = np.zeros((self.N, self.N))
         self._R = np.zeros((self.N,))
-        self.converganceErr = 0.0
-        self.converganceItera = 0
 
     def setRelaxCoef(self, rlx):
         self.rlx = rlx
@@ -44,6 +42,8 @@ class Newmark_Integrator( Integrator ):
         self._Javailable = True
 
         
+
+    
     def integrateOneTimeStep(self, t0, t1):
 
         n = self.n
@@ -61,7 +61,7 @@ class Newmark_Integrator( Integrator ):
         if not self._Javailable:
             self.setJacobian(dt, self.Q, self.DQ, self.DDQ)
 
-        self.converganceItera = 0
+        itera = 0
         while 1:
 
             #compute the acceleration
@@ -73,17 +73,17 @@ class Newmark_Integrator( Integrator ):
                             0.5 * dt**2 * ( (1.0 - 2. * beta) * self.DDQ0 + 2.0 * beta * self.DDQ )
             self._R[n::] = self.DQ - self.DQ0 - dt * ( (1.0 - gamma) * self.DDQ0 + gamma * self.DDQ)
 
-            #compute the convergence err and the correction increment U.
-            self.converganceErr = np.linalg.norm(self._R)
+            #compute the err and the correction increment U.
+            err = np.linalg.norm(self._R)
             U = np.linalg.solve(self._J, -self._R)
 
             self.Q[:] = self.Q + rlx * U[0:n]
             self.DQ[:] = self.DQ + rlx * U[n::]
             
-            if (self.converganceErr < self._tol) or (self.converganceItera > self._maxIter):
+            if (err < self._tol) or (itera > self._maxIter):
                 break
             
-            self.converganceItera += 1
+            itera += 1
         
         self.Q0[:] = self.Q
         self.DQ0[:] = self.DQ
