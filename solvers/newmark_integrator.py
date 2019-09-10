@@ -19,8 +19,8 @@ class Newmark_Integrator( Integrator ):
         self.invM = np.linalg.inv(M)
         self._J = np.zeros((self.N, self.N))
         self._R = np.zeros((self.N,))
-        self.converganceErr = 0.0
-        self.converganceItera = 0
+        self._converganceErr = 0.0
+        self._converganceItera = 0
 
     def setRelaxCoef(self, rlx):
         self.rlx = rlx
@@ -53,20 +53,20 @@ class Newmark_Integrator( Integrator ):
         #
         
         dt = t1 - t0
-        self.Q[:] = self.Q0
-        self.DQ[:] = self.DQ0
-        self.DDQ[:] = self.DDQ0
+        self.Q = self.Q0
+        self.DQ = self.DQ0
+        self.DDQ = self.DDQ0
         
 
         if not self._Javailable:
             self.setJacobian(dt, self.Q, self.DQ, self.DDQ)
 
-        self.converganceItera = 0
+        self._converganceItera = 0
         while 1:
 
             #compute the acceleration
             force = self.funforce(t1, dt, self.Q, self.DQ, self.DDQ)
-            self.DDQ[:] = np.dot(self.invM, force)
+            self.DDQ = np.dot(self.invM, force)
 
             #compute the vector residuel
             self._R[0:n] = self.Q  - self.Q0 - dt * self.DQ0 - \
@@ -74,20 +74,30 @@ class Newmark_Integrator( Integrator ):
             self._R[n::] = self.DQ - self.DQ0 - dt * ( (1.0 - gamma) * self.DDQ0 + gamma * self.DDQ)
 
             #compute the convergence err and the correction increment U.
-            self.converganceErr = np.linalg.norm(self._R)
+            self._converganceErr = np.linalg.norm(self._R)
             U = np.linalg.solve(self._J, -self._R)
 
-            self.Q[:] = self.Q + rlx * U[0:n]
-            self.DQ[:] = self.DQ + rlx * U[n::]
+            self.Q = self.Q + rlx * U[0:n]
+            self.DQ = self.DQ + rlx * U[n::]
             
-            if (self.converganceErr < self._tol) or (self.converganceItera > self._maxIter):
+            if (self._converganceErr < self._tol) or (self._converganceItera > self._maxIter):
                 break
             
-            self.converganceItera += 1
+            self._converganceItera += 1
         
-        self.Q0[:] = self.Q
-        self.DQ0[:] = self.DQ
-        self.DDQ0[:] = self.DDQ
+        self.Q0 = self.Q
+        self.DQ0 = self.DQ
+        self.DDQ0 = self.DDQ
         
         return True
+    
+    def getIntegratedDisplacementAndVelocity(self):
+        return self.Q, self.DQ
+    
+    def getErrorConvergence(self):
+        return self._converganceErr
+
+    def getIteraBeforeConvergence(self):
+        return self._converganceItera
+
 

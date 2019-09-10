@@ -30,7 +30,8 @@ class TransientSimulation():
         df = self.rotor.functionDerivativeForce
         self.OnestepInteg = Newmark_Integrator( dof, M, f, df )
 
-        self.OnestepInteg.setInitialValues(self.rotor.Q , self.rotor.DQ)
+        Q, DQ = self.rotor.getRotorPositionAndVelocity()
+        self.OnestepInteg.setInitialValues(Q , DQ)
         self.OnestepInteg.setConvergenceCriteria( tol, Iter )
         
     def integrate(self):
@@ -39,9 +40,10 @@ class TransientSimulation():
         dt = self._dt
 
         # save initial information into results
-        converganceErr = self.OnestepInteg.converganceErr
-        converganceItera = self.OnestepInteg.converganceItera
-        self._saveOneTimestepResu(t0, self.rotor.Q , self.rotor.DQ, converganceErr, converganceItera)
+        converganceErr = self.OnestepInteg.getErrorConvergence()
+        converganceItera = self.OnestepInteg.getIteraBeforeConvergence()
+        Q, DQ = self.rotor.getRotorPositionAndVelocity()
+        self._saveOneTimestepResu(t0, Q , DQ, converganceErr, converganceItera)
 
         while 1:
             
@@ -50,19 +52,20 @@ class TransientSimulation():
 
             # one step integration
             self.OnestepInteg.integrateOneTimeStep(t0, t1)
+            Q, DQ = self.OnestepInteg.getIntegratedDisplacementAndVelocity()
+            converganceErr = self.OnestepInteg.getErrorConvergence()
+            converganceItera = self.OnestepInteg.getIteraBeforeConvergence()
             
             # update the information in the other relative objects.
-            self.rotor.setRotorPositionAndVelocity( self.OnestepInteg.Q, self.OnestepInteg.DQ )
+            self.rotor.setRotorPositionAndVelocity( Q, DQ )
 
             # save the instance resualts
-            converganceErr = self.OnestepInteg.converganceErr
-            converganceItera = self.OnestepInteg.converganceItera
-            self._saveOneTimestepResu(t1, self.rotor.Q , self.rotor.DQ, converganceErr, converganceItera)
+            self._saveOneTimestepResu(t1, Q, DQ, converganceErr, converganceItera)
 
             # end of one timestep integration
             if t1 >= self._tend :
                 break
-            t0 = np.copy(t1)
+            t0 = t1
 
         # end of temporel integration
         self._saveAllResu()
@@ -71,8 +74,8 @@ class TransientSimulation():
     # save the simulation resualts
     def _saveOneTimestepResu(self, inst, q, dq, convergErr, convergItera):
         self.resu['time'].append(inst)
-        self.resu['position'].append( np.copy(q) )
-        self.resu['velocity'].append( np.copy(dq) )
+        self.resu['position'].append( q )
+        self.resu['velocity'].append( dq )
         self.resu['convergeError'].append( convergErr )
         self.resu['convergeItera'].append( convergItera )
         

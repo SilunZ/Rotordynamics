@@ -5,36 +5,51 @@ __author__="Silun Zhang (silun.zhang@gmail.com)"
 import numpy as np
 from models.rotorComponentBuilder import RotorBuilder
 
-class Load():
-    def __init__(self):
-        pass
+class FourDegreeOfFreedomRotor( RotorBuilder ):
 
-class TwoDegreeOfFreedomRotor( RotorBuilder ):
-
-    def __init__(self, Omega, Ra, mass, Um):
+    def __init__(self, Omega, Ra, length, rho):
 
         RotorBuilder.__init__(self, Omega, Ra)
-        
-        self._setRotorMassMatrix( mass )
-        self._setUnbalance( Um )
+        self._setLength(length)
+        self._setMaterial(rho)
 
-        # initial rotor position and velocity
-        self.dof = 2                        # degree of freedom in x and y directions
+        self.discs = []
+        self.brgs = []
+        self.loads = []
+
+        # initial rotor position and velocity at center of mass
+        self.dof = 4                        # degree of freedom in x and y directions (rotation and translation)
         self.Q = np.zeros((self.dof,))
         self.DQ = np.zeros_like(self.Q)
         self.DDQ = np.zeros_like(self.Q)
     
-    def setRotorPositionAndVelocity(self, Q, DQ, DDQ=None):
+    def _setLength(self, length):
+        self.length = length
 
+    def _setMaterial(self, rho):
+        self.density = rho
+
+    def addDiscComponent(self, disc):
+        self.discs.append( disc )
+
+    def addBearingComponent(self, brg):
+        self.brgs.append( brg )
+
+    def addLoadComponenet(self, load):
+        self.loads.append( load )
+    
+    def computeRotorMass(self):
+        self.mass = 
+
+    ##
+    def setRotorPositionAndVelocityAtCentreOfMass(self, Q, DQ, DDQ=None):
         self.Q = Q
         self.DQ = DQ
         if not DDQ is None:
             self.DDQ = DDQ
 
-    def addBearingComponent(self, brg):
 
-        self._brg = brg
-
+    ##
 
     def _setRotorMassMatrix(self, value):
         self.M = np.zeros((2,2))
