@@ -5,7 +5,7 @@ __author__="Silun Zhang (silun.zhang@gmail.com)"
 import numpy as np
 
 
-class BearingBuilder():
+class BasicBearingBuilder():
 
     def __init__(self, Omega, Ra):
         self.setRotationSpeed( Omega )

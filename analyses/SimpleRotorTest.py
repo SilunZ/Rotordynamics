@@ -9,11 +9,11 @@ sys.path.append( rootPath )
 
 # import rotor component
 from models.rotor2dof import TwoDegreeOfFreedomRotor
-rotModel = TwoDegreeOfFreedomRotor( Omega=1000, Ra=0.2, mass=5.0, Um=1e-4 )
+rotModel = TwoDegreeOfFreedomRotor( Omega=1000, Ra_ext=0.2, mass=5.0, Um=1e-4 )
 
 # import bearing component
 from models.bearingSimpleKC import SimpleKCBearing
-brgModel =  SimpleKCBearing( rotModel.Omega, rotModel.Ra )
+brgModel =  SimpleKCBearing( rotModel.Omega, rotModel.Ra_ext )
 brgModel.readBearingDynamicCoefficientFile( rootPath + r"\analyses\DynaCoef_Data.txt" )
 
 # add bearing into rotor model
@@ -23,7 +23,7 @@ rotModel.addBearingComponent(brgModel)
 from solvers.transient_simulation import TransientSimulation
 simu = TransientSimulation( rotModel, dt = 1e-4 )
 simu.setTransientParametors( 0.0, 1.0 )
-simu.initializeIntegrator( tol=1e-6, Iter=10 )
+simu.initializeIntegrator( tol=1e-3, Iter=10 )
 simu.integrate()
 
 # post traitement simple

@@ -3,17 +3,17 @@
 __author__="Silun Zhang (silun.zhang@gmail.com)"
 
 import numpy as np
-from models.rotorComponentBuilder import RotorBuilder
+from models.rotorComponentBuilder import BasicRotorBuilder
 
 class Load():
     def __init__(self):
         pass
 
-class TwoDegreeOfFreedomRotor( RotorBuilder ):
+class TwoDegreeOfFreedomRotor( BasicRotorBuilder ):
 
-    def __init__(self, Omega, Ra, mass, Um):
+    def __init__(self, Omega, Ra_ext, mass, Um):
 
-        RotorBuilder.__init__(self, Omega, Ra)
+        BasicRotorBuilder.__init__(self, Omega, Ra_ext)
         
         self._setRotorMassMatrix( mass )
         self._setUnbalance( Um )

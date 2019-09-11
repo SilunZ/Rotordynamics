@@ -27,8 +27,7 @@ class TransientSimulation():
         dof = self.rotor.dof
         M = self.rotor.M
         f = self.rotor.functionForce
-        df = self.rotor.functionDerivativeForce
-        self.OnestepInteg = Newmark_Integrator( dof, M, f, df )
+        self.OnestepInteg = Newmark_Integrator( dof, M, f )
 
         Q, DQ = self.rotor.getRotorPositionAndVelocity()
         self.OnestepInteg.setInitialValues(Q , DQ)
@@ -55,7 +54,7 @@ class TransientSimulation():
             Q, DQ = self.OnestepInteg.getIntegratedDisplacementAndVelocity()
             converganceErr = self.OnestepInteg.getErrorConvergence()
             converganceItera = self.OnestepInteg.getIteraBeforeConvergence()
-            
+           
             # update the information in the other relative objects.
             self.rotor.setRotorPositionAndVelocity( Q, DQ )
 

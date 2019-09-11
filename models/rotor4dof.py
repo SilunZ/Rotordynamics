@@ -3,25 +3,29 @@
 __author__="Silun Zhang (silun.zhang@gmail.com)"
 
 import numpy as np
-from models.rotorComponentBuilder import RotorBuilder
+from models.rotorComponentBuilder import BasicRotorBuilder
 
-class FourDegreeOfFreedomRotor( RotorBuilder ):
+class FourDegreeOfFreedomRotor( BasicRotorBuilder ):
 
-    def __init__(self, Omega, Ra, length, rho):
+    def __init__(self, Omega, Ra_ext, Ra_int, length, rho):
 
-        RotorBuilder.__init__(self, Omega, Ra)
+        BasicRotorBuilder.__init__(self, Omega, Ra_ext, Ra_int)
         self._setLength(length)
         self._setMaterial(rho)
 
-        self.discs = []
-        self.brgs = []
-        self.loads = []
+        self.disc_list = []
+        self.brg_list = []
+        self.unb_list = []
+
+        self.totalMass = 0.0
+        self.GZ = 0.0
 
         # initial rotor position and velocity at center of mass
         self.dof = 4                        # degree of freedom in x and y directions (rotation and translation)
         self.Q = np.zeros((self.dof,))
         self.DQ = np.zeros_like(self.Q)
         self.DDQ = np.zeros_like(self.Q)
+        self.M = np.zeros((self.dof,self.dof))
     
     def _setLength(self, length):
         self.length = length
@@ -30,84 +34,134 @@ class FourDegreeOfFreedomRotor( RotorBuilder ):
         self.density = rho
 
     def addDiscComponent(self, disc):
-        self.discs.append( disc )
+        self.disc_list.append( disc )
 
     def addBearingComponent(self, brg):
-        self.brgs.append( brg )
-
-    def addLoadComponenet(self, load):
-        self.loads.append( load )
+        self.brg_list.append( brg )
     
-    def computeRotorMass(self):
-        self.mass = 
+    def addUnbalanceComponent(self, unb):
+        self.unb_list.append( unb )
 
-    ##
-    def setRotorPositionAndVelocityAtCentreOfMass(self, Q, DQ, DDQ=None):
+## some basic computation for geometrical and inertie features
+
+    def _computeRotorMass(self):
+        
+        self.shaftMass = np.pi * ( self.Ra_ext**2 - self.Ra_int**2) * self.length * self.density
+        self.totalMass += self.shaftMass
+        
+        for disc in self.disc_list:
+            self.totalMass += disc.mass
+    
+    def _computeCenterOfMass(self):
+        """
+        calculate the center of mass of the assembly rotor
+        """
+
+        self.GaZ = self.shaftMass*0.5*self.length
+        self.GZ += self.GaZ
+
+        for disc in self.disc_list:
+            self.GZ += disc.mass*disc.DZ
+        
+        self.GZ /= self.totalMass
+
+        print ("--- the rotor center of mass GZ is %s m" % self.GZ)
+    
+    def _computeMomentOfInertia(self):
+        """
+        Iaxx, Iayy are the shaft moments of inertia ; Izz is the shaft polar moment of inertia
+        """
+        self.Iaxx = 1.0/4.0 * np.pi * ( self.Ra_ext**4 - self.Ra_int**4 )
+        self.Iayy = 1.0/4.0 * np.pi * ( self.Ra_ext**4 - self.Ra_int**4 )
+        self.Iazz = 1.0/2.0 * np.pi * ( self.Ra_ext**4 - self.Ra_int**4 )
+        
+        # self.GaZ
+        # for disc in self.disc_list:
+
+    def _updateRotorMassMatrix(self):
+        self.M[0,0] = self.totalMass
+        self.M[1,1] = self.totalMass
+        self.M[2,2] = self.Iazz*self.totalMass
+        self.M[3,3] = self.Iazz*self.totalMass
+    
+    def setRotorMassMatrix(self, M, J):
+        self.M[0,0] = M
+        self.M[1,1] = M
+        self.M[2,2] = J
+        self.M[3,3] = J
+
+    def computeBasicGeometricalFeatures(self):
+        self._computeRotorMass()
+        self._computeCenterOfMass()
+        self._computeMomentOfInertia()
+        self._updateRotorMassMatrix()
+
+##  kinematic parametors 
+
+    def setRotorPositionAndVelocity(self, Q, DQ, DDQ=None):
         self.Q = Q
         self.DQ = DQ
         if not DDQ is None:
             self.DDQ = DDQ
 
-
-    ##
-
-    def _setRotorMassMatrix(self, value):
-        self.M = np.zeros((2,2))
-        self.M[0,0] = value
-        self.M[1,1] = value
-    
-    def _setUnbalance(self, value):
-        self._Um = value
-
-    ## exterior forces applied to rotor in function of time instance (inst)
-
-    def _computeUnbalanceForce(self, inst):
-
-        angle = np.angle(self._Um)
-        w =  self.omega
-        
-        Fx = w**2 * abs(self._Um)* np.cos( w*inst + angle )
-        Fy = w**2 * abs(self._Um)* np.sin( w*inst + angle )
-        Fumba = [Fx, Fy]
-
-        return Fumba 
-    
-    def _computeBearingForce(self):
-
-        Fbrg = -( np.dot( self._brg.K, self.Q  ) + np.dot( self._brg.C, self.DQ  ) )
-
-        return Fbrg
-    
-    # total force to be used
-    
-    def functionForce(self, inst, dt, Q, DQ, DDQ):
-
-        ### Force
-        # rolling bearing force
-        Fbrg = self._computeBearingForce()
-
-        # imbalance or harmonic force
-        Fimba = self._computeUnbalanceForce( inst )
-
-        # gravity force
-        Fgrav = np.dot( self.M, [9.81, 0.0] )
-
-        # total forces
-        Ftotal = Fbrg +  Fimba + Fgrav
-
-        return Ftotal
-    
-    def functionDerivativeForce(self, dt, Q, DQ, DDQ):
-        return -self._brg.K , -self._brg.C
-
-    # output rotor class information
     def getRotorPositionAndVelocity(self):
         return self.Q, self.DQ
+    
+    def _getKinematicParametorsAtAxialCordinateDZ(self, DZ):
 
+        distance = DZ - self.GZ
+        Q = np.zeros((self.dof,))
+        DQ = np.zeros((self.dof,))
+        
+        Q[0] = self.Q[0] + distance*self.Q[3]
+        Q[1] = self.Q[1] - distance*self.Q[2]
+        Q[2] = self.Q[2]
+        Q[3] = self.Q[3]
 
+        DQ[0] = self.DQ[0] + distance*self.DQ[3]
+        DQ[1] = self.DQ[1] - distance*self.DQ[2]
+        DQ[2] = self.DQ[2]
+        DQ[3] = self.DQ[3]
+        
+        return Q, DQ
+    
+##  dyanmic forces function and its derivative
 
+    def _updateTorqueAtCenterOfMassGz(self, F, DZ):
 
+        distance = DZ - self.GZ
+        F[2] = - distance*F[1]
+        F[3] = distance*F[0]
+        
+        return F
+    
+    def functionForce(self, inst, dt, Q, DQ):
+        """
+        the total exterior forces for rotor have been calculated at the center of mass GZ
+        """
+        ### Force
+        self.totalForce = np.zeros((self.dof, ))
+        self.setRotorPositionAndVelocity(Q, DQ)
+        
+        # # gravity force
+        # vect_gravity = [9.81, 0.0, 0.0, 0.0]
+        # Fgrav = np.dot( self.M, vect_gravity  )
+        # self.totalForce += Fgrav
 
+        # linear bearing force
+        for brg in self.brg_list :
+            brgQ, brgDQ = self._getKinematicParametorsAtAxialCordinateDZ( brg.DZ )
+            brg.computeLinearBearingForce( brgQ, brgDQ )
+            brgF = self._updateTorqueAtCenterOfMassGz( brg.getForce() , brg.DZ )
+            self.totalForce += brgF
+
+        # unbalance or harmonic force
+        for unb in self.unb_list :
+            unb.computeUnbalanceForce(self.omega, inst)
+            unbF = self._updateTorqueAtCenterOfMassGz( unb.getForce() , unb.DZ )
+            self.totalForce += unbF
+
+        return self.totalForce
 
 
 

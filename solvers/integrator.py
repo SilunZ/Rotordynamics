@@ -8,11 +8,10 @@ import matplotlib.pyplot as plt
 
 class Integrator():
 
-    def __init__(self, dof, f, df):
+    def __init__(self, dof, f):
 
         self.n = dof
         self.funforce = f
-        self.fundf = df
 
         self.N = 2 * self.n
         self._Javailable = False
@@ -25,10 +24,10 @@ class Integrator():
         self.DDQ = np.zeros_like(self.Q0)
     
     def setInitialValues(self, Q, DQ, DDQ=None):
-        self.Q0[:] = Q
-        self.DQ0[:] = DQ
+        self.Q0 = Q
+        self.DQ0 = DQ
         if not DDQ is None:
-            self.DDQ0[:] = DDQ
+            self.DDQ0 = DDQ
 
     def setConvergenceCriteria(self, tol=1e-6, Iter=30):
         
