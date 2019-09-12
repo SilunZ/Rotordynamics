@@ -8,12 +8,13 @@ from solvers.integrator import Integrator
 
 class Newmark_Integrator( Integrator ):
 
-    def __init__(self, dof, M, funforce, gamma=0.5, beta=0.25):
+    def __init__(self, dof, M, funforce, fundf, gamma=0.5, beta=0.25):
         
         Integrator.__init__(self, dof, funforce)
         self.setConvergenceCriteria(self)
         self.setRelaxCoef(rlx = 1.0)
 
+        self.fundf = fundf
         self._gamma = gamma
         self._beta = beta
         self.invM = np.linalg.inv(M)
@@ -49,14 +50,17 @@ class Newmark_Integrator( Integrator ):
 
             self._R[0:n] = self.Q - self.Q0
             self._R[n::] = self.DQ - self.DQ0
+
             
             #compute the convergence err and the correction increment U.
             self._converganceErr = np.linalg.norm(self._R)
+            self._converganceItera += 1
             
             if (self._converganceErr < self._tol) or (self._converganceItera > self._maxIter):
                 break
+        
             
-            self._converganceItera += 1
+            
 
         self.Q0 = self.Q
         self.DQ0 = self.DQ

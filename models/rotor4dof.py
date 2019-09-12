@@ -163,6 +163,9 @@ class FourDegreeOfFreedomRotor( BasicRotorBuilder ):
 
         return self.totalForce
 
+    def functionDerivativeForce(self, dt, Q, DQ):
+        pass
+
 
 
 

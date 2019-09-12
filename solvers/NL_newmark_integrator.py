@@ -26,13 +26,13 @@ class Newmark_Integrator( Integrator ):
     def setRelaxCoef(self, rlx):
         self.rlx = rlx
     
-    def setJacobian(self, dt, Q, DQ, DDQ):
+    def setJacobian(self, dt, Q, DQ):
         
         n = self.n
         beta = self._beta
         gamma = self._gamma
         #
-        dFdQ, dFdV = self.fundf(dt, Q, DQ, DDQ) 
+        dFdQ, dFdV = self.fundf(dt, Q, DQ) 
 
         invMK = np.dot(self.invM, dFdQ)
         invMC = np.dot(self.invM, dFdV)
@@ -60,13 +60,13 @@ class Newmark_Integrator( Integrator ):
         
 
         if not self._Javailable:
-            self.setJacobian(dt, self.Q, self.DQ, self.DDQ)
+            self.setJacobian(dt, self.Q, self.DQ)
 
         self._converganceItera = 0
         while 1:
 
             #compute the acceleration
-            force = self.funforce(t1, dt, self.Q, self.DQ, self.DDQ)
+            force = self.funforce(t1, dt, self.Q, self.DQ)
             self.DDQ = np.dot(self.invM, force)
 
             #compute the vector residuel
@@ -81,10 +81,11 @@ class Newmark_Integrator( Integrator ):
             self.Q = self.Q + rlx * U[0:n]
             self.DQ = self.DQ + rlx * U[n::]
             
+            self._converganceItera += 1
+
             if (self._converganceErr < self._tol) or (self._converganceItera > self._maxIter):
                 break
-            
-            self._converganceItera += 1
+        
         
         self.Q0 = self.Q
         self.DQ0 = self.DQ

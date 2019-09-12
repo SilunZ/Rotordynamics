@@ -2,10 +2,13 @@
 
 __author__="Silun Zhang (silun.zhang@gmail.com)"
 
+import time
 import numpy as np
 import os,sys
 rootPath = os.getcwd()
 sys.path.append( rootPath ) 
+
+start_time = time.time()
 
 # import rotor component
 from models.rotor2dof import TwoDegreeOfFreedomRotor
@@ -23,8 +26,10 @@ rotModel.addBearingComponent(brgModel)
 from solvers.transient_simulation import TransientSimulation
 simu = TransientSimulation( rotModel, dt = 1e-4 )
 simu.setTransientParametors( 0.0, 1.0 )
-simu.initializeIntegrator( tol=1e-3, Iter=10 )
+simu.initializeIntegrator( tol=1e-10, Iter=30 )
 simu.integrate()
+
+print("--- %s seconds ---" % (time.time() - start_time)) 
 
 # post traitement simple
 import matplotlib.pyplot as plt

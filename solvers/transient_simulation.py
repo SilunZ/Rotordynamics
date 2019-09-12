@@ -4,6 +4,7 @@ __author__="Silun Zhang (silun.zhang@gmail.com)"
 
 import numpy as np
 from solvers.newmark_integrator import Newmark_Integrator
+# from solvers.NL_newmark_integrator import Newmark_Integrator
 
 
 class TransientSimulation():
@@ -27,7 +28,9 @@ class TransientSimulation():
         dof = self.rotor.dof
         M = self.rotor.M
         f = self.rotor.functionForce
-        self.OnestepInteg = Newmark_Integrator( dof, M, f )
+        df = self.rotor.functionDerivativeForce
+        self.OnestepInteg = Newmark_Integrator( dof, M, f, df )
+
 
         Q, DQ = self.rotor.getRotorPositionAndVelocity()
         self.OnestepInteg.setInitialValues(Q , DQ)

@@ -65,7 +65,7 @@ class TwoDegreeOfFreedomRotor( BasicRotorBuilder ):
     
     # total force to be used
     
-    def functionForce(self, inst, dt, Q, DQ, DDQ):
+    def functionForce(self, inst, dt, Q, DQ):
 
         ### Force
         # rolling bearing force
@@ -82,7 +82,7 @@ class TwoDegreeOfFreedomRotor( BasicRotorBuilder ):
 
         return Ftotal
     
-    def functionDerivativeForce(self, dt, Q, DQ, DDQ):
+    def functionDerivativeForce(self, dt, Q, DQ):
         return -self._brg.K , -self._brg.C
 
     # output rotor class information
