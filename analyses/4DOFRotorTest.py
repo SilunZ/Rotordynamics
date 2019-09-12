@@ -52,7 +52,7 @@ rotModel.addBearingComponent(brg2)
 
 # import transient simulation module 
 from solvers.transient_simulation import TransientSimulation
-simu = TransientSimulation( rotModel, dt = 0.5e-4 )
+simu = TransientSimulation( rotModel, dt = 0.5e-3 )
 simu.setTransientParametors( 0.0, 1.0 )
 simu.initializeIntegrator( tol=1e-3, Iter=5 )
 simu.integrate()
@@ -69,10 +69,26 @@ converganceError_vect = simu.resu['convergeError']
 plt.figure()
 plt.subplot(221)
 plt.plot( t_vect, pos_vect[:,0:2])
+plt.grid()
+
 plt.subplot(222)
-plt.plot( pos_vect[:,1], pos_vect[:,0] )
+plt.xlabel("Y [micro m]")
+plt.ylabel("X [micro m]")
+plt.gca().invert_yaxis()
+plt.axis('equal')
+plt.grid()
+plt.plot( pos_vect[:,1]*1e6, pos_vect[:,0]*1e6 )
+
 plt.subplot(223)
 plt.plot( t_vect, converganceError_vect)
+plt.grid()
+
 plt.subplot(224)
 plt.plot( t_vect, converganceItera_vect)
+
+
 plt.show()
+
+
+        
+        
