@@ -1,0 +1,20 @@
+
+<RCC>
+  <qresource prefix="/ade_1_proj_1/images">
+    <file alias="light_yellow_pix16.png">images/light_yellow_pix16.png</file>
+    <file alias="warning_pix24_bw.png">images/warning_pix24_bw.png</file>
+    <file alias="IOpic.png">images/IOpic.png</file>
+    <file alias="model3.png">images/model3.png</file>
+    <file alias="options_pix16.png">images/options_pix16.png</file>
+    <file alias="model2.png">images/model2.png</file>
+    <file alias="update_pix16.png">images/update_pix16.png</file>
+    <file alias="light_green_pix16.png">images/light_green_pix16.png</file>
+    <file alias="model4.png">images/model4.png</file>
+    <file alias="model5.png">images/model5.png</file>
+    <file alias="light_red_pix16.png">images/light_red_pix16.png</file>
+    <file alias="model1.png">images/model1.png</file>
+    <file alias="file_browser_pix16.png">images/file_browser_pix16.png</file>
+    <file alias="model0.png">images/model0.png</file>
+    <file alias="plot_pix16.png">images/plot_pix16.png</file>
+  </qresource>
+</RCC>
