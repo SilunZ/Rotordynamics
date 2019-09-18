@@ -7,77 +7,60 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import pyqtSlot
+# from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
+#         QDial, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit,
+#         QProgressBar, QPushButton, QRadioButton, QScrollBar, QSizePolicy,
+#         QSlider, QSpinBox, QStyleFactory, QTableWidget, QTabWidget, QTextEdit,
+#         QMainWindow, QAction, QVBoxLayout, QWidget)
+# from PyQt5.QtGui import QIcon
 
-class Ui_MainForm(QMainWindow):
+
+from PyQt5 import QtGui, QtWidgets, QtCore
+from ui_tabs import TabsWidget
+
+class Ui_MainForm(QtWidgets.QMainWindow):
 
     def __init__(self):
 
         super().__init__()
 
-        styleLabel = QLabel("&Style:")
-        styleLabel.setBuddy(styleComboBox)
-        self.useStylePaletteCheckBox = QCheckBox("&Use style's standard palette")
-        self.useStylePaletteCheckBox.setChecked(True)
-
-        self.title = 'ORACode'
-        self.left = 10
-        self.top = 10
-        self.width = 640
-        self.height = 400
         self.initUI()
+
+        self.mytabs = TabsWidget(self)
+        self.setCentralWidget( self.mytabs  )
+
         self.show()
-    
+
     def initUI(self):
         
-        self.setWindowTitle(self.title)
-        self.setGeometry(self.left, self.top, self.width, self.height)
+        self.setWindowTitle('ORACode')
+        # self.setGeometry(10, 100, 800, 600)
+        self.resize(800, 600)
+        
         self.statusBar().showMessage('to be filled up')
         
-        # mainMenu Buttons
+        # creat mainMenu
         mainMenu = self.menuBar()
-        fileMenu = mainMenu.addMenu('File')
-        editMenu = mainMenu.addMenu('Edit')
-        viewMenu = mainMenu.addMenu('View')
-        searchMenu = mainMenu.addMenu('Search')
-        toolsMenu = mainMenu.addMenu('Tools')
-        helpMenu = mainMenu.addMenu('Help')
+        self.fileMenu = mainMenu.addMenu('File')
+        self._setFileMenu()
 
-        # creat new model Button
-        creatButton = QAction(QIcon('creat24.png'), 'New model', self)
-        creatButton.setShortcut('Ctrl+N')
-        creatButton.setStatusTip('creat new model')
-        creatButton.triggered.connect(self.create)
-        fileMenu.addAction(creatButton)
-
-        # Save current model Button
-        saveButton = QAction(QIcon('save24.png'), 'Save', self)
-        saveButton.setShortcut('Ctrl+S')
-        saveButton.setStatusTip('Save current model')
-        saveButton.triggered.connect(self.saveState)
-        fileMenu.addAction(saveButton)
         
+    def _setFileMenu(self):
+       
         # Exit application Button
-        exitButton = QAction(QIcon('exit.png'), 'Exit', self)
+        exitButton = QtWidgets.QAction( QtGui.QIcon('exit.png'), 'Exit', self)
         exitButton.setShortcut('Ctrl+Q')
         exitButton.setStatusTip('Exit application')
-        exitButton.triggered.connect(self.close)
-        fileMenu.addAction(exitButton)
+        exitButton.triggered.connect(self.close)        
+        self.fileMenu.addAction(exitButton)
 
-        self.setWindowTitle("Styles")
-        self.changeStyle('Windows')
 
-    def changeStyle(self, styleName):
-        QApplication.setStyle(QStyleFactory.create(styleName))
-        self.changePalette()
-    
-    def changePalette(self):
-        if (self.useStylePaletteCheckBox.isChecked()):
-            QApplication.setPalette(QApplication.style().standardPalette())
-        else:
-            QApplication.setPalette(self.originalPalette)
+        
+
+
+
+
+
     
 
 
@@ -85,7 +68,6 @@ if __name__ == '__main__':
 
     import sys
 
-    app = QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     ex = Ui_MainForm()
-    ex.show()
     sys.exit(app.exec_()) 
