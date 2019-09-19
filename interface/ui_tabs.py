@@ -3,41 +3,35 @@
 from PyQt5 import QtGui, QtWidgets, QtCore
 from PyQt5.QtCore import pyqtSlot
 
-class TabsWidget( QtWidgets.QWidget):
+class TabsWidget( QtWidgets.QWidget ):
     
     def __init__(self, parent):
         
         super( QtWidgets.QWidget, self).__init__(parent)
-        self.layout = QtWidgets.QVBoxLayout(self)
         
-        # Initialize tab screen
-        self.tabs = QtWidgets.QTabWidget()
-        self.tab1 = QtWidgets.QWidget()
-        self.tab2 = QtWidgets.QWidget()
-        self.tab3 = QtWidgets.QWidget()
-        self.tab4 = QtWidgets.QWidget()
-        self.tab5 = QtWidgets.QWidget()
-        self.setGeometry(10, 10, 100, 100)
-        
-        # Add tabs
-        self.tabs.addTab(self.tab1," Rotor ")
-        self.tabs.addTab(self.tab2," Bearing ")
-        self.tabs.addTab(self.tab3," Calculation setting ")
-        self.tabs.addTab(self.tab4," Solve ")
-        self.tabs.addTab(self.tab5," Results ")
-
-        self._setRotorTabs()
-
-        # Add tabs to widget
-        self.layout.addWidget(self.tabs)
-        self.setLayout(self.layout)
 
 ##
     def _setRotorTabs(self):
 
         # Create first tab
         self.tab1.box = QtWidgets.QGridLayout(self.tab1)
-        self.tab1.box.setColumnStretch(1, 10)
+        # self.tab1.box.setColumnStretch(1, 10)
+
+        # topLeftGroupBox = QtWidgets.QGroupBox()
+
+        # radioButton1 = QtWidgets.QRadioButton("Radio button 1")
+        # radioButton2 = QtWidgets.QRadioButton("Radio button 2")
+        # radioButton3 = QtWidgets.QRadioButton("Radio button 3")
+
+        # ButtonBoxLayout = QtWidgets.QHBoxLayout()
+        # ButtonBoxLayout.addWidget(radioButton1)
+        # ButtonBoxLayout.addWidget(radioButton2)
+        # ButtonBoxLayout.addWidget(radioButton3)
+        # ButtonBoxLayout.addStretch(1)
+        # topLeftGroupBox.setLayout(ButtonBoxLayout)
+
+        # self.tab1.box.addWidget(radioButton1)
+
 
         # Creat labels
         label1 = QtWidgets.QLabel('Rotating Speed', self)
@@ -57,15 +51,21 @@ class TabsWidget( QtWidgets.QWidget):
         self.tab1.box.addWidget(self._textbox2,1,1)
         self.tab1.box.addWidget(self._textbox3,2,1)
 
-        # Create a button in the window
-        self.button1 = QtWidgets.QPushButton('apply', self)
-        self.button2 = QtWidgets.QPushButton('reset', self)
+        # Create the buttons in bottom of the tab1 layout
 
-        self.tab1.box.addWidget(self.button1,20,0)
-        self.tab1.box.addWidget(self.button2,21,0)
+        # ButtonLayout = QtWidgets.QHBoxLayout()
+
+        # self.button1 = QtWidgets.QPushButton('apply', self)
+        # self.button2 = QtWidgets.QPushButton('reset', self)
+
+        # ButtonLayout.addWidget(self.button1)
+        # ButtonLayout.addWidget(self.button2)
+
+        # self.tab1.box.addWidget(self.button1,20,3)
+        # self.tab1.box.addWidget(self.button2,21,3)
 
         # connect button to function on_click
-        self.button1.clicked.connect(self.apply_click)
+        # self.button1.clicked.connect(self.apply_click)
 
     @pyqtSlot()
     def apply_click(self):

@@ -1,22 +1,11 @@
 ﻿# -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:/Users/msdvyv/AppData/Local/Temp/tmp80027/mainform.ui'
-#
-# Created: Tue Nov 06 15:42:06 2018
-#      by: pyside2-uic  running on PySide2 2.0.0~alpha0
-#
-# WARNING! All changes made in this file will be lost!
-
-# from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
-#         QDial, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit,
-#         QProgressBar, QPushButton, QRadioButton, QScrollBar, QSizePolicy,
-#         QSlider, QSpinBox, QStyleFactory, QTableWidget, QTabWidget, QTextEdit,
-#         QMainWindow, QAction, QVBoxLayout, QWidget)
-# from PyQt5.QtGui import QIcon
-
-
 from PyQt5 import QtGui, QtWidgets, QtCore
-from ui_tabs import TabsWidget
+from interface.ui_rotorWidget import Rotor
+from interface.ui_bearingWidget import BearingWidget
+
+from functools import partial
+
 
 class Ui_MainForm(QtWidgets.QMainWindow):
 
@@ -24,28 +13,33 @@ class Ui_MainForm(QtWidgets.QMainWindow):
 
         super().__init__()
 
-        self.initUI()
+        self.setWindowTitle('ORACode')
+        self.resize(800, 600)
+       
+        # creat mainMenu
+        self._setMenu()
 
-        self.mytabs = TabsWidget(self)
-        self.setCentralWidget( self.mytabs  )
+        # creat main layout
+        self.mainLayout = QtWidgets.QVBoxLayout()
+
+        # creat tabs
+        self._setTabs()
+
+
+        # creat Lower banner
+        self._setLowerBanner()
+
+        # central widget of QMainWindow
+        centralWidget = QtWidgets.QDialog()
+        centralWidget.setLayout(self.mainLayout)
+        self.setCentralWidget(centralWidget)
 
         self.show()
+    
+    def _setMenu(self):
 
-    def initUI(self):
-        
-        self.setWindowTitle('ORACode')
-        # self.setGeometry(10, 100, 800, 600)
-        self.resize(800, 600)
-        
-        self.statusBar().showMessage('to be filled up')
-        
-        # creat mainMenu
         mainMenu = self.menuBar()
         self.fileMenu = mainMenu.addMenu('File')
-        self._setFileMenu()
-
-        
-    def _setFileMenu(self):
        
         # Exit application Button
         exitButton = QtWidgets.QAction( QtGui.QIcon('exit.png'), 'Exit', self)
@@ -54,20 +48,101 @@ class Ui_MainForm(QtWidgets.QMainWindow):
         exitButton.triggered.connect(self.close)        
         self.fileMenu.addAction(exitButton)
 
-
+    def _setLowerBanner(self):
         
+        # creat lower banner buttons
+        self.nextButton = QtWidgets.QPushButton("Next")
+        self.backButton = QtWidgets.QPushButton("Back")
+        self.resetButton = QtWidgets.QPushButton("Reset")
+        self.applyButton = QtWidgets.QPushButton("Apply")
 
+        self.nextButton.clicked.connect(partial(self._manageTabs, 1))
+        self.backButton.clicked.connect(partial(self._manageTabs, -1))
+        self.applyButton.clicked.connect( self._manageApplyButtonAction )
 
+        # Lower banner
+        bannerLayout = QtWidgets.QHBoxLayout()
+        bannerLayout.addStretch(1)
+        bannerLayout.addWidget(self.backButton)
+        bannerLayout.addWidget(self.nextButton)
+        bannerLayout.addWidget(self.applyButton)
+        bannerLayout.addWidget(self.resetButton)
 
+        # set bannerLayout to the main layout
+        self.mainLayout.addLayout(bannerLayout)
+    
+    def _setTabs(self):
+        
+        tabsLayout = QtWidgets.QVBoxLayout()
 
+        # Initialize tab screen
+        self.tabs = QtWidgets.QTabWidget()
 
+        #### tab 1 : " rotor setting"
+        tab1Layout = QtWidgets.QGridLayout()
+
+        # set model choice box
+        modelChoiceBox = QtWidgets.QGroupBox(" Rotor model : ")
+        layout = QtWidgets.QHBoxLayout()
+        radioButton1 = QtWidgets.QRadioButton("Jeffcott model ")
+        radioButton2 = QtWidgets.QRadioButton("4-degree-of-freedow model")
+        radioButton3 = QtWidgets.QRadioButton("Finite element model")
+        layout.addWidget(radioButton1)
+        layout.addWidget(radioButton2)
+        layout.addWidget(radioButton3)
+        layout.addStretch(1)
+        modelChoiceBox.setLayout(layout)
+
+        self.rotSetting = Rotor()
+        # self.rotSetting2 = Rotor()
+        # self.rotSetting3 = Rotor()
+        tab1Layout.addWidget(modelChoiceBox, 0, 0, 1, 1)
+        tab1Layout.addWidget(self.rotSetting, 1, 0)
+        # tab1Layout.addWidget(self.rotSetting2, 2, 0)
+        # tab1Layout.addWidget(self.rotSetting3, 0, 1, 3, 1)
+
+        tab1 = QtWidgets.QWidget()
+        tab1.setLayout(tab1Layout)
+  
+        #### tab 2 : " bearing setting"
+        tab2 = QtWidgets.QWidget()
+        tab3 = QtWidgets.QWidget()
+        tab4 = QtWidgets.QWidget()
+        tab5 = QtWidgets.QWidget()
+        
+        # Add tabs
+        self.tabs.addTab(tab1," Rotor ")
+        self.tabs.addTab(tab2," Bearing ")
+        self.tabs.addTab(tab3," Calculation setting ")
+        self.tabs.addTab(tab4," Solve ")
+        self.tabs.addTab(tab5," Results ")
+
+        # Add tabs to widget
+        tabsLayout.addWidget(self.tabs)
+        self.mainLayout.addLayout(tabsLayout)
+    
+##  ##
+
+    def _manageApplyButtonAction(self):
+
+        self.rotSetting.applyButtonAction()
     
 
+    def _manageTabs(self, step=0):
 
-if __name__ == '__main__':
+        tabIndex = self.tabs.currentIndex()
+        if self.nextButton.isEnabled() and step == 1:
+            # move to next tab
+            tabIndex += 1
+            self.tabs.setCurrentIndex(tabIndex)
+            self._manageTabs(0)
 
-    import sys
+        if self.backButton.isEnabled() and step == -1:
+            # move to back tab 
+            tabIndex -= 1
+            self.tabs.setCurrentIndex(tabIndex)
+            self._manageTabs(0)
 
-    app = QtWidgets.QApplication(sys.argv)
-    ex = Ui_MainForm()
-    sys.exit(app.exec_()) 
+
+
+
