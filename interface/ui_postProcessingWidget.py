@@ -3,13 +3,13 @@ from PyQt5 import QtGui, QtWidgets, QtCore
 from PyQt5.QtCore import pyqtSlot
 import numpy as np
 
-class Bearing( QtWidgets.QGroupBox ):
+class PostProcessing( QtWidgets.QGroupBox ):
     """
     description : pass
-    """
+    """ 
     def __init__(self):
         
-        super( Bearing, self).__init__()
+        super( PostProcessing, self).__init__()
         
         # set rotor layout
         layout = QtWidgets.QGridLayout()
@@ -23,18 +23,9 @@ class Bearing( QtWidgets.QGroupBox ):
             self._txtboxs.append( QtWidgets.QLineEdit() ) 
             layout.addWidget(self._txtboxs[-1], i , 1)
 
-        self._setDefaultValue()
-
         layout.setColumnStretch(1, 1)
         layout.setColumnMinimumWidth(0, 110)
         self.setLayout(layout)
-    
-    def _setDefaultValue(self):
-
-        self._txtboxs[0].setText( "1000.0" ) 
-        self._txtboxs[1].setText( "0.2" ) 
-        self._txtboxs[2].setText( "10e-6" ) 
-
     
     @pyqtSlot()
     def applyButtonAction(self):

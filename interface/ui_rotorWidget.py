@@ -2,6 +2,7 @@
 
 from PyQt5 import QtGui, QtWidgets, QtCore
 from PyQt5.QtCore import pyqtSlot
+import os, sys
 import numpy as np
 
 class Rotor( QtWidgets.QGroupBox ):
@@ -14,27 +15,43 @@ class Rotor( QtWidgets.QGroupBox ):
         
         # set rotor layout
         layout = QtWidgets.QGridLayout()
-        self.labels_list = ['Rotating Speed', 'Shaft Radius', 'Total rotor mass']
+        self.labels_list = ['Rotating Speed', 'Shaft Radius', 'Total rotor mass', 'unbalance']
         self._txtboxs = []
         for i, label in enumerate(self.labels_list):
 
-            lab = QtWidgets.QLabel('%s' % (label))
+            lab = QtWidgets.QLabel('%s' % (label))  ##
             layout.addWidget(lab, i , 0)
 
             self._txtboxs.append( QtWidgets.QLineEdit() ) 
             layout.addWidget(self._txtboxs[-1], i , 1)
 
+        self._setDefaultValue()
+
         layout.setColumnStretch(1, 1)
         layout.setColumnMinimumWidth(0, 110)
         self.setLayout(layout)
+    
+    def _setDefaultValue(self):
+
+        self._txtboxs[0].setText( "1000.0" ) 
+        self._txtboxs[1].setText( "0.2" ) 
+        self._txtboxs[2].setText( "5.0" ) 
+        self._txtboxs[3].setText( "100e-6" ) 
     
     @pyqtSlot()
     def applyButtonAction(self):
         
         self.data_list = []
         for i, label in enumerate(self.labels_list):
+
             numInTxt = self._txtboxs[i].text()
-            self.data_list.append( np.float( numInTxt ) )
+
+            try:
+                self.data_list.append( np.float( numInTxt ) )
+            except:
+                QtWidgets.QMessageBox.question(self, 'Warning : ', " please check and fill up all the empty boxes" , QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.Ok)
+                break
 
         # set rotor input dictionay to store the user defined data
         self.ORACodeInput = {'labels': self.labels_list, 'data': self.data_list}
+        print ( self.ORACodeInput )

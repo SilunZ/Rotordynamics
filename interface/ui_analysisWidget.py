@@ -3,17 +3,17 @@ from PyQt5 import QtGui, QtWidgets, QtCore
 from PyQt5.QtCore import pyqtSlot
 import numpy as np
 
-class Bearing( QtWidgets.QGroupBox ):
+class Analysis( QtWidgets.QGroupBox ):
     """
     description : pass
-    """
+    """ 
     def __init__(self):
         
-        super( Bearing, self).__init__()
+        super( Analysis, self).__init__()
         
         # set rotor layout
         layout = QtWidgets.QGridLayout()
-        self.labels_list = ['Rotating Speed', 'Radius', 'Clearance']
+        self.labels_list = ['time step', 'start time', 'end time']
         self._txtboxs = []
         for i, label in enumerate(self.labels_list):
 
@@ -31,11 +31,10 @@ class Bearing( QtWidgets.QGroupBox ):
     
     def _setDefaultValue(self):
 
-        self._txtboxs[0].setText( "1000.0" ) 
-        self._txtboxs[1].setText( "0.2" ) 
-        self._txtboxs[2].setText( "10e-6" ) 
+        self._txtboxs[0].setText( "1e-4" ) 
+        self._txtboxs[1].setText( "0.0" ) 
+        self._txtboxs[2].setText( "1.0" ) 
 
-    
     @pyqtSlot()
     def applyButtonAction(self):
         
