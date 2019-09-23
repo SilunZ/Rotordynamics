@@ -185,19 +185,24 @@ class Ui_MainForm(QtWidgets.QMainWindow):
         """
         tab 5 : " Post-processing  "
         """
-        self.pst = PostProcessing()
+        self.pst = PostProcessing( self.solve )
 
-        plotBox = QtWidgets.QGroupBox(" Bearing model : ")
-        layout = QtWidgets.QHBoxLayout()
+        # plotBox = QtWidgets.QGroupBox(" Bearing model : ")
+        # layout = QtWidgets.QHBoxLayout()
 
-        RunButton = QtWidgets.QPushButton(" Post-processing ")
-        RunButton.setDefault(True)
-        layout.addWidget(RunButton)
-        plotBox.setLayout(layout)
+        # RunButton = QtWidgets.QPushButton(" Post-processing ")
+        # RunButton.setDefault(True)
+        # layout.addWidget(RunButton)
+        # plotBox.setLayout(layout)
+
+
+
 
         tab5Layout = QtWidgets.QGridLayout()
-        tab5Layout.addWidget(plotBox, 0, 0, 1, 1)
+        # tab5Layout.addWidget(plotBox, 0, 0, 1, 1)
         tab5Layout.addWidget(self.pst, 1, 0)
+
+        # self.addToolBar(NavigationToolbar(static_canvas, self))
 
         self._tabLayout_list.append( tab5Layout )
 
@@ -207,7 +212,6 @@ class Ui_MainForm(QtWidgets.QMainWindow):
     def _manageApplyButtonAction(self):
         
         tabIndex = self.tabs.currentIndex()
-
         if tabIndex == 0:
             self.rotSetting.applyButtonAction()
         elif tabIndex == 1:
@@ -215,10 +219,9 @@ class Ui_MainForm(QtWidgets.QMainWindow):
         if tabIndex == 2:
             self.analySetting.applyButtonAction()
         if tabIndex == 3:
-            self.solve.click_RunButtonAction()
+            self.solve.click_SetButtonAction()
         if tabIndex == 4:
             self.pst.applyButtonAction()
-    
 
     def _manageTabs(self, step=0):
 

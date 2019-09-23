@@ -13,23 +13,22 @@ class Resolution( QtWidgets.QGroupBox ):
         
         super( Resolution, self).__init__()
 
-
         self.SetButton = QtWidgets.QPushButton(" Set up the simulating model")
-        self.SetButton.setDefault(False)
-        # self.SetButton.clicked.connect( self.click_SetButtonAction() )
+        self.SetButton.clicked.connect( self.click_SetButtonAction )
 
-        self.RunButton = QtWidgets.QPushButton(" Run simulation")
-        self.RunButton.setDefault(False)
-        # self.SetButton.clicked.connect( self.click_RunButtonAction() )
+        self.RunButton = QtWidgets.QPushButton(" Run simulation ")
+        self.RunButton.clicked.connect( self.click_RunButtonAction )
 
-
-        layout = QtWidgets.QHBoxLayout()
+        layout = QtWidgets.QHBoxLayout() 
         layout.addWidget(self.SetButton)
         layout.addWidget(self.RunButton)
-
-
-
         self.setLayout( layout )
+
+        ##
+        self.modelAvailble =  False
+        self.resuDataAvail = False
+        
+        
 
     def getInput(self, rot, brg, analy):
         
@@ -62,23 +61,24 @@ class Resolution( QtWidgets.QGroupBox ):
         # import transient simulation module 
         from solvers.transient_simulation import TransientSimulation
         self.simu = TransientSimulation( rotModel, dt = 1e-4 )
-        self.simu.setTransientParametors( 0.0, 1.0 )
-        self.simu.initializeIntegrator( tol=1e-10, Iter=30 )
-
-    
+        self.simu.setTransientParametors( 0.0, 0.2 )
+        self.simu.initializeIntegrator( tol=1e-7, Iter=30 )
+        
     
     @pyqtSlot()
     def click_RunButtonAction(self):
-        pass
-        # self.RunButton.clicked.connect( self.simu.integrate() )
 
+        if  self.modelAvailble == True:
+            self.simu.integrate()
+            self.resuDataAvail = True
+            print ('---> The calculation has been completed.')
+        else: 
+            QtWidgets.QMessageBox.question(self, 'Warning : ', " please set up first the rotor model" , QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.Ok)
 
     def click_SetButtonAction(self):
-        pass
-        # self._setSimulatingModelBuilder()
-
-        
-        
+        self._setSimulatingModelBuilder()
+        self.modelAvailble = True
+        print ('---> The rotor model has been setted.')
 
     def click_ApplybuttonAction(self):
         pass
