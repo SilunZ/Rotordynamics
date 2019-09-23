@@ -18,7 +18,7 @@ class Resolution( QtWidgets.QGroupBox ):
 
         self.RunButton = QtWidgets.QPushButton(" Run simulation ")
         self.RunButton.clicked.connect( self.click_RunButtonAction )
-
+        
         layout = QtWidgets.QHBoxLayout() 
         layout.addWidget(self.SetButton)
         layout.addWidget(self.RunButton)

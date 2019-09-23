@@ -103,21 +103,21 @@ class Ui_MainForm(QtWidgets.QMainWindow):
         
         self.rotSetting = Rotor()
 
-            # set model choice box
-        modelChoiceBox = QtWidgets.QGroupBox(" Rotor model : ")
-        layout = QtWidgets.QHBoxLayout()
-        radioButton1 = QtWidgets.QRadioButton("Jeffcott model ")
-        radioButton2 = QtWidgets.QRadioButton("4-degree-of-freedow model")
-        radioButton3 = QtWidgets.QRadioButton("Finite element model")
-        layout.addWidget(radioButton1)
-        layout.addWidget(radioButton2)
-        layout.addWidget(radioButton3)
-        layout.addStretch(1)
-        modelChoiceBox.setLayout(layout)
+        #     # set model choice box
+        # modelChoiceBox = QtWidgets.QGroupBox(" Rotor model : ")
+        # layout = QtWidgets.QHBoxLayout()
+        # radioButton1 = QtWidgets.QRadioButton("Jeffcott model ")
+        # radioButton2 = QtWidgets.QRadioButton("4-degree-of-freedow model")
+        # radioButton3 = QtWidgets.QRadioButton("Finite element model")
+        # layout.addWidget(radioButton1)
+        # layout.addWidget(radioButton2)
+        # layout.addWidget(radioButton3)
+        # layout.addStretch(1)
+        # modelChoiceBox.setLayout(layout)
 
             # deployment
         tab1Layout = QtWidgets.QGridLayout()
-        tab1Layout.addWidget(modelChoiceBox, 0, 0, 1, 1)
+        # tab1Layout.addWidget(modelChoiceBox, 0, 0, 1, 1)
         tab1Layout.addWidget(self.rotSetting, 1, 0)
 
         self._tabLayout_list.append( tab1Layout )
@@ -187,17 +187,6 @@ class Ui_MainForm(QtWidgets.QMainWindow):
         """
         self.pst = PostProcessing( self.solve )
 
-        # plotBox = QtWidgets.QGroupBox(" Bearing model : ")
-        # layout = QtWidgets.QHBoxLayout()
-
-        # RunButton = QtWidgets.QPushButton(" Post-processing ")
-        # RunButton.setDefault(True)
-        # layout.addWidget(RunButton)
-        # plotBox.setLayout(layout)
-
-
-
-
         tab5Layout = QtWidgets.QGridLayout()
         # tab5Layout.addWidget(plotBox, 0, 0, 1, 1)
         tab5Layout.addWidget(self.pst, 1, 0)
@@ -206,14 +195,13 @@ class Ui_MainForm(QtWidgets.QMainWindow):
 
         self._tabLayout_list.append( tab5Layout )
 
-
 ##  
 
     def _manageApplyButtonAction(self):
         
         tabIndex = self.tabs.currentIndex()
         if tabIndex == 0:
-            self.rotSetting.applyButtonAction()
+            self.rotSetting.RotorModelWidgets.applyButtonAction()
         elif tabIndex == 1:
             self.brgSetting.applyButtonAction()
         if tabIndex == 2:

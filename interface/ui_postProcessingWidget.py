@@ -17,7 +17,7 @@ from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 
 
-class PostProcessing( QtWidgets.QGroupBox ):
+class PostProcessing( QtWidgets.QMainWindow ):
     """
     description : pass
     """ 
@@ -36,7 +36,7 @@ class PostProcessing( QtWidgets.QGroupBox ):
         self.LoadResuButton.clicked.connect( self.loadSimulationResultData )
 
         # set plot choice combobox
-        self.plotChoiceBox = QtWidgets.QComboBox(self)
+        self.plotChoiceBox = QtWidgets.QComboBox()
         for i, label in enumerate(self.labels_list):
             self.plotChoiceBox.addItem(label)
         self.plotChoiceBox.activated[str].connect(self._manageComboBoxPlots)
@@ -45,14 +45,14 @@ class PostProcessing( QtWidgets.QGroupBox ):
         self._static_canvas = FigureCanvas(Figure(figsize=(5, 3)))
 
         # set post processing layout
-        layout = QtWidgets.QGridLayout()
+        self.mainLayout = QtWidgets.QGridLayout()
+        self.mainLayout.addWidget( self.LoadResuButton, 0, 0)
+        self.mainLayout.addWidget( self.plotChoiceBox, 0, 1)
+        self.mainLayout.addWidget( self._static_canvas, 1, 0, 1, 2)
 
-        
-        layout.addWidget(self.LoadResuButton, 0 , 0)
-        layout.addWidget(self.plotChoiceBox, 0 , 1)
-        layout.addWidget(self._static_canvas, 1, 0, 1, 2)
-
-        self.setLayout(layout)
+        centralWidget = QtWidgets.QDialog()
+        centralWidget.setLayout(self.mainLayout)
+        self.setCentralWidget(centralWidget)
     
     def loadSimulationResultData(self):
 
