@@ -1,7 +1,7 @@
 
 
 from PyQt5 import QtGui, QtWidgets, QtCore
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtCore import pyqtSlot, Qt
 import os, sys
 import numpy as np
 
@@ -31,12 +31,10 @@ class Rotor( QtWidgets.QMainWindow ):
         # set rotor model parameter box (in function of the chosen model)
         self.modelChoiceComboBox.activated[str].connect(self._managementOfModel)
 
-
         # set rotor widgets main layout
         self.layout = QtWidgets.QGridLayout()
         self.layout.addWidget( modelChoiceBox, 0, 0)
         
-
         centralWidget = QtWidgets.QDialog()
         centralWidget.setLayout(self.layout)
         self.setCentralWidget(centralWidget)
@@ -44,11 +42,12 @@ class Rotor( QtWidgets.QMainWindow ):
     def _managementOfModel(self):
         
         modelComboBoxIndex = self.modelChoiceComboBox.currentIndex()
-        if modelComboBoxIndex == 0 :
+        if modelComboBoxIndex == 0 : # chose Jeffcott model 
             self.RotorModelWidgets = JeffCottRotor()
-        else:
-            self.RotorModelWidgets = JeffCottRotor()
-
+        elif modelComboBoxIndex == 1 : # chose 4 degree of freedow model 
+            pass
+        elif modelComboBoxIndex == 2 : # chose the finite element model
+            pass
         self.layout.addWidget( self.RotorModelWidgets, 1, 0, 5, 1)
 
 
@@ -63,7 +62,7 @@ class JeffCottRotor( QtWidgets.QGroupBox ):
         super( JeffCottRotor, self).__init__()
         
         ## parametors box
-        self.labels_list = ['Rotating Speed', 'Shaft Radius', 'Total rotor mass', 'unbalance']
+        self.labels_list = ['Rotating Speed (RPM)', 'Shaft Radius (m)', 'Total rotor mass (Kg)', 'unbalance (kg.m)']
         self._txtboxs = []
 
         layout = QtWidgets.QGridLayout()
@@ -83,7 +82,9 @@ class JeffCottRotor( QtWidgets.QGroupBox ):
         ## image box
         vizu = QtWidgets.QLabel()
         pixmap = QtGui.QPixmap("interface\images\jeffcottRotor.png")
-        vizu.setPixmap(pixmap)
+        pixmap2 = pixmap.scaled(400, 200, QtCore.Qt.KeepAspectRatio)
+        vizu.setPixmap(pixmap2)
+        
         
         layout.addWidget(vizu, 0, 2, 0, 1)
         
@@ -127,7 +128,7 @@ class FourDOFRotor( QtWidgets.QGroupBox ):
         
         ## parametors box
 
-        self.labels_list = ['Rotating Speed', 'Shaft Radius', 'Total rotor mass', 'unbalance']
+        self.labels_list = ['Rotating Speed (RPM)', 'Shaft Radius (m)', 'Total rotor mass (Kg)', 'unbalance (kg.m)']
         self._txtboxs = []
 
         layout = QtWidgets.QGridLayout()
